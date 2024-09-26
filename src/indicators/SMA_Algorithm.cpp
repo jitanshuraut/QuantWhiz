@@ -1,13 +1,21 @@
 #include "SMA_Algorithm.hpp"
+#include <stdexcept>
 #include <numeric>
 
-std::vector<double> SMA::calculate(const std::vector<double>& prices, int period) {
-    std::vector<double> smaValues;
-
-    for (std::size_t i = 0; i <= prices.size() - period; ++i) {
-        double sum = std::accumulate(prices.begin() + i, prices.begin() + i + period, 0.0);
-        smaValues.push_back(sum / period);
+double SMA::calculateSignal()
+{
+    if (prices.size() < period)
+    {
+        throw std::runtime_error("Not enough data to calculate SMA.");
     }
 
-    return smaValues;
+    double sum = std::accumulate(prices.end() - period, prices.end(), 0.0);
+    double sma = sum / period;
+
+    signals.push_back(sma);
+    return sma;
+}
+
+std::vector<double> SMA::calculate(const std::vector<double> &prices, int period)
+{
 }

@@ -33,3 +33,4 @@
 
 # Ignore build files
 /build/
+*.sh
