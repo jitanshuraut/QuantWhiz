@@ -1,4 +1,4 @@
-#include "RSI_Algorithm.hpp"
+#include "algorithm/RSI_Algorithm.hpp"
 #include <stdexcept>
 #include <numeric>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Indicator.h"
+#include "indicator/Indicator.h"
 #include <vector>
 
 class EMA : public Indicator {

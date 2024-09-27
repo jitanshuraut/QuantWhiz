@@ -1,7 +1,7 @@
 #ifndef MACD_ALGORITHM_HPP
 #define MACD_ALGORITHM_HPP
 
-#include "Indicator.h"
+#include "indicator/Indicator.h"
 #include "EMA_Algorithm.hpp"  
 #include <vector>
 #include <utility>

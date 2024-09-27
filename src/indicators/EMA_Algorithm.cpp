@@ -1,4 +1,4 @@
-#include "EMA_Algorithm.hpp"
+#include "algorithm/EMA_Algorithm.hpp"
 
 double EMA::calculateSignal()
 {

@@ -1,7 +1,7 @@
 #ifndef RSI_HPP
 #define RSI_HPP
 
-#include "Indicator.h"
+#include "indicator/Indicator.h"
 #include <vector>
 
 class RSI : public Indicator {

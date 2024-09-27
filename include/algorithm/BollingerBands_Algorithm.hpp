@@ -1,7 +1,7 @@
 #ifndef BOLLINGERBANDS_HPP
 #define BOLLINGERBANDS_HPP
 
-#include "Indicator.h" // Include the base class header
+#include "indicator/Indicator.h"
 #include <vector>
 #include <utility>
 

@@ -1,4 +1,4 @@
-#include "BollingerBands_Algorithm.hpp"
+#include "algorithm/BollingerBands_Algorithm.hpp"
 #include <cmath>
 #include <vector>
 #include <stdexcept>

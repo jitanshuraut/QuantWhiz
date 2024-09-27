@@ -1,4 +1,4 @@
-#include "SMA_Algorithm.hpp"
+#include "algorithm/SMA_Algorithm.hpp"
 #include <stdexcept>
 #include <numeric>
 

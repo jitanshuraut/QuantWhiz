@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include "StockDataFetcher.hpp"
-#include "SMA_Algorithm.hpp"
-#include "MACD_Algorithm.hpp"
-#include "RSI_Algorithm.hpp"
-#include "KNN_Algorithm.hpp"
-#include "BollingerBands_Algorithm.hpp"
-#include "EMA_Algorithm.hpp"
+#include "algorithm/SMA_Algorithm.hpp"
+#include "algorithm/EMA_Algorithm.hpp"
+#include "algorithm/RSI_Algorithm.hpp"
+#include "algorithm/MACD_Algorithm.hpp"
+#include "algorithm/KNN_Algorithm.hpp"
+#include "algorithm/BollingerBands_Algorithm.hpp"
 #include "utils.hpp"
 
 enum class AlgorithmType

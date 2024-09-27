@@ -1,5 +1,5 @@
-#include "MACD_Algorithm.hpp"
-#include "EMA_Algorithm.hpp"
+#include "algorithm/MACD_Algorithm.hpp"
+#include "algorithm/EMA_Algorithm.hpp"
 #include <stdexcept>
 
 double MACD::calculateSignal()
