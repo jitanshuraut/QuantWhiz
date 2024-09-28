@@ -8,6 +8,9 @@
 #include "algorithm/KNN_Algorithm.hpp"
 #include "algorithm/BollingerBands_Algorithm.hpp"
 #include "utils.hpp"
+#include "OHLCV.hpp"
+#include <iomanip> 
+#include <ctime>
 
 enum class AlgorithmType
 {
@@ -19,6 +22,9 @@ enum class AlgorithmType
     RSI,
     Invalid
 };
+
+std::time_t now = std::time(nullptr);
+std::tm startingTimestamp;
 
 AlgorithmType getAlgorithmType(int choice)
 {
@@ -41,13 +47,16 @@ AlgorithmType getAlgorithmType(int choice)
     }
 }
 
-void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &historicalPrices)
+void executeAlgorithm(AlgorithmType algorithm, const std::vector<OHLCV> &historicalData)
 {
-    for (int i = 0; i < historicalPrices.size(); i++)
-    {
-        std::cout << " hist price: " << historicalPrices[i] << " ";
-    }
-    std::cout << std::endl;
+    // for (const auto &data : historicalData)
+    // {
+    //     std::cout << "Open: " << data.open << " High: " << data.high
+    //               << " Low: " << data.low << " Close: " << data.close
+    //               << " Volume: " << data.volume << std::endl;
+    // }
+    // std::cout << std::endl;
+
     int period;
     switch (algorithm)
     {
@@ -57,15 +66,19 @@ void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &histor
         {
             SMA sma("Simple Moving Average", period);
 
-            for (size_t i = 0; i < historicalPrices.size(); ++i)
+            for (size_t i = 0; i < historicalData.size(); ++i)
             {
-                sma.addPrice(historicalPrices[i]);
+                sma.addPrice(historicalData[i].close); // Use close price for SMA
                 if (i >= period - 1)
                 {
                     try
                     {
                         double smaValue = sma.calculateSignal();
-                        std::cout << "SMA Day " << i + 1 << ": " << smaValue << std::endl;
+                        std::tm timeInfo = startingTimestamp;
+                        timeInfo.tm_min += i * 15;
+                        std::mktime(&timeInfo);
+                        std::cout << "SMA at " << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S")
+                                  << ": " << smaValue << std::endl;
                     }
                     catch (const std::runtime_error &e)
                     {
@@ -81,13 +94,17 @@ void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &histor
         std::cin >> period;
         {
             EMA ema("Exponential Moving Average", period);
-            for (size_t i = 0; i < historicalPrices.size(); ++i)
+            for (size_t i = 0; i < historicalData.size(); ++i)
             {
-                ema.addPrice(historicalPrices[i]);
+                ema.addPrice(historicalData[i].close);
                 if (ema.getPriceSize() >= period)
                 {
                     double emaValue = ema.calculateSignal();
-                    std::cout << "EMA Day " << i + 1 << ": " << emaValue << std::endl;
+                    std::tm timeInfo = startingTimestamp;
+                    timeInfo.tm_min += i * 15;
+                    std::mktime(&timeInfo);
+                    std::cout << "EMA at " << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S")
+                              << ": " << emaValue << std::endl;
                 }
             }
         }
@@ -97,15 +114,18 @@ void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &histor
         std::cout << "Enter RSI Period: ";
         std::cin >> period;
         {
-
             RSI rsi("Relative Strength Index", period);
-            for (size_t i = 0; i < historicalPrices.size(); ++i)
+            for (size_t i = 0; i < historicalData.size(); ++i)
             {
-                rsi.addPrice(historicalPrices[i]);
+                rsi.addPrice(historicalData[i].close);
                 if (rsi.getPriceSize() >= period)
                 {
                     double rsiValue = rsi.calculateSignal();
-                    std::cout << "RSI Day " << i + 1 << ": " << rsiValue << std::endl;
+                    std::tm timeInfo = startingTimestamp;
+                    timeInfo.tm_min += i * 15;
+                    std::mktime(&timeInfo);
+                    std::cout << "RSI at " << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S")
+                              << ": " << rsiValue << std::endl;
                 }
             }
         }
@@ -121,25 +141,24 @@ void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &histor
         std::cin >> signalPeriod;
         {
             MACD macd("Moving Average Convergence Divergence", shortPeriod, longPeriod, signalPeriod);
-            auto macdValuesPair = macd.calculate(historicalPrices, shortPeriod, longPeriod, signalPeriod);
+            auto macdValuesPair = macd.calculate(historicalData, shortPeriod, longPeriod, signalPeriod);
             std::vector<double> macdLine = macdValuesPair.first;
             std::vector<double> signalLine = macdValuesPair.second;
 
             for (size_t i = 0; i < signalLine.size(); i++)
             {
-                macd.addPrice(historicalPrices[i]);
-                std::cout << macd.getPriceSize() << std::endl;
+                macd.addPrice(historicalData[i].close); 
 
                 if (macd.getSignalSize() >= longPeriod + signalPeriod)
                 {
                     double macdValue = macd.calculateSignal();
-                    std::cout << "MACD" << macdValue << std::endl;
+                    std::tm timeInfo = startingTimestamp;
+                    timeInfo.tm_min += i * 15;
+                    std::mktime(&timeInfo);
 
-                    if (macd.getSignalSize() > 0 && macd.signalLine.size() > 0)
-                    {
-                        std::cout << "MACD Day " << i + 1 << ": MACD: " << macdValue
-                                  << ", Signal: " << macd.signalLine.back() << std::endl;
-                    }
+                    std::cout << "MACD at " << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S")
+                              << ": " << ": MACD: " << macdValue
+                              << ", Signal: " << macd.signalLine.back() << std::endl;
                 }
             }
         }
@@ -152,11 +171,10 @@ void executeAlgorithm(AlgorithmType algorithm, const std::vector<double> &histor
         double stdDevMultiplier;
         std::cin >> stdDevMultiplier;
         {
-
             BollingerBands bb("Bollinger Bands", period, stdDevMultiplier);
-            for (size_t i = 0; i < historicalPrices.size(); ++i)
+            for (size_t i = 0; i < historicalData.size(); ++i)
             {
-                bb.addPrice(historicalPrices[i]);
+                bb.addPrice(historicalData[i].close); 
                 try
                 {
                     auto [upperBand, lowerBand] = bb.calculate();
@@ -196,7 +214,13 @@ int main()
     std::cout << "Enter Time Period (in days): ";
     std::cin >> timePeriod;
 
-    std::vector<double> historicalPrices = StockDataFetcher::fetchStockData(stockSymbol, timePeriod);
+    std::vector<OHLCV> historicalData = StockDataFetcher::fetchStockData(stockSymbol, timePeriod);
+    startingTimestamp = *std::localtime(&now);
+
+    for (auto data : historicalData)
+    {
+        std::cout << data.high << std::endl;
+    }
 
     while (true)
     {
@@ -219,7 +243,7 @@ int main()
             continue;
         }
 
-        executeAlgorithm(selectedAlgorithm, historicalPrices);
+        executeAlgorithm(selectedAlgorithm, historicalData);
     }
 
     return 0;
