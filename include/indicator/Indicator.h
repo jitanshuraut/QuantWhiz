@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <numeric>
 #include <stdexcept>
+#include "OHLCV.hpp"
 
 class Indicator
 {

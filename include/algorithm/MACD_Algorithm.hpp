@@ -40,7 +40,8 @@ public:
             }
         }
     };
-    static std::pair<std::vector<double>, std::vector<double>> calculate(const std::vector<double> &prices, int shortPeriod, int longPeriod, int signalPeriod);
+    static std::pair<std::vector<double>, std::vector<double>> calculate(const std::vector<OHLCV> &ohlcvData, int shortPeriod, int longPeriod, int signalPeriod);
+
 
 public:
     int shortPeriod;
