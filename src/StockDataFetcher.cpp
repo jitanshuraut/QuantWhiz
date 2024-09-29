@@ -1,10 +1,9 @@
 #include "StockDataFetcher.hpp"
-#include "utils.hpp" 
+#include "utils.hpp"
 #include <curl/curl.h>
-#include <json/json.h> 
+#include <json/json.h>
 #include <iostream>
 #include <string>
-
 
 size_t WriteCallback(void *contents, size_t size, size_t nmemb, std::string *s)
 {
@@ -17,8 +16,8 @@ std::string getCurrentDate()
     time_t now = time(0);
     struct tm tstruct;
     char buf[80];
-    tstruct = *gmtime(&now);                                    
-    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tstruct); 
+    tstruct = *gmtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tstruct);
     return std::string(buf);
 }
 
@@ -26,14 +25,14 @@ std::string getDateNDaysAgo(int daysAgo)
 {
     time_t now = time(0);
     struct tm tstruct;
-    now -= daysAgo * 24 * 60 * 60; 
-    tstruct = *gmtime(&now);       
+    now -= daysAgo * 24 * 60 * 60;
+    tstruct = *gmtime(&now);
     char buf[80];
-    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tstruct); 
+    strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%SZ", &tstruct);
     return std::string(buf);
 }
 
-std::vector<OHLCV> StockDataFetcher::fetchStockData(const std::string &stockSymbol, int timePeriod)
+std::vector<OHLCV> StockDataFetcher::fetchStockData(const std::string &stockSymbol, int timePeriod, int Min)
 {
     std::vector<OHLCV> ohlcvData;
     std::string apiKey = getEnvVariable("APCA_API_KEY_ID");
@@ -49,7 +48,7 @@ std::vector<OHLCV> StockDataFetcher::fetchStockData(const std::string &stockSymb
     std::string startDate = getDateNDaysAgo(timePeriod);
 
     std::string url = "https://data.alpaca.markets/v2/stocks/" + stockSymbol +
-                      "/bars?timeframe=15Min&start=" + startDate + "&end=" + currentDate + "&limit=1000&adjustment=raw&feed=iex&sort=asc";
+                      "/bars?timeframe=" + std::to_string(Min) + "Min&start=" + startDate + "&end=" + currentDate + "&limit=1000&adjustment=raw&feed=iex&sort=asc";
 
     CURL *curl;
     CURLcode res;
@@ -79,7 +78,7 @@ std::vector<OHLCV> StockDataFetcher::fetchStockData(const std::string &stockSymb
         if (!reader.parse(readBuffer, jsonData))
         {
             std::cerr << "Failed to parse JSON: " << reader.getFormattedErrorMessages() << std::endl;
-            return ohlcvData; 
+            return ohlcvData;
         }
         // std::cout << "JSON Response: " << readBuffer << std::endl;
         if (jsonData.isMember("bars"))
@@ -92,7 +91,7 @@ std::vector<OHLCV> StockDataFetcher::fetchStockData(const std::string &stockSymb
                 ohlcv.low = bar["l"].asDouble();
                 ohlcv.close = bar["c"].asDouble();
                 ohlcv.volume = bar["v"].asDouble();
-                ohlcv.timestamp = bar["t"].asString(); 
+                ohlcv.timestamp = bar["t"].asString();
 
                 ohlcvData.push_back(ohlcv);
             }

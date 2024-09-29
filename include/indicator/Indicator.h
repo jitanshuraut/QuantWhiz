@@ -6,12 +6,14 @@
 #include <numeric>
 #include <stdexcept>
 #include "OHLCV.hpp"
+#include <variant>
+#include "SignalResult.hpp"
 
 class Indicator
 {
 protected:
-    std::vector<double> prices;
-    std::vector<double> signals;
+    std::vector<OHLCV> historicalData;
+    std::vector<SignalResult> signals;
     int period;
     std::string name;
 
@@ -21,50 +23,41 @@ public:
 
     virtual ~Indicator() = default;
 
-    void addPrice(double price)
+    void addData(const OHLCV &data)
     {
-        prices.push_back(price);
-        if (prices.size() > period)
-        {
-            prices.erase(prices.begin());
-        }
+        historicalData.push_back(data);
+       
     }
 
-    virtual double calculateSignal() = 0;
-
-    double getLastSignal() const
-    {
-        return !signals.empty() ? signals.back() : 0.0;
-    }
-
-    const std::vector<double> &getHistoricalSignals() const
+    virtual SignalResult calculateSignal() = 0;
+    const std::vector<SignalResult> &getHistoricalSignals() const
     {
         return signals;
     }
 
     void reset()
     {
-        prices.clear();
+        historicalData.clear();
         signals.clear();
     }
 
     const std::string &getName() const { return name; }
     int getPeriod() const { return period; }
-    int getPriceSize() const {return prices.size();}
-    int getSignalSize() const {return signals.size();}
+    int getDataSize() const { return historicalData.size(); }
+    int getSignalSize() const { return signals.size(); }
 
     virtual void adjustParameters(int newPeriod)
     {
         period = newPeriod;
     }
 
-    void backtest(const std::vector<double> &historicalPrices)
+    void backtest(const std::vector<OHLCV> &historicalPrices)
     {
         reset();
-        for (double price : historicalPrices)
+        for (const OHLCV &data : historicalPrices)
         {
-            addPrice(price);
-            double signal = calculateSignal();
+            addData(data);
+            SignalResult signal = calculateSignal();
             signals.push_back(signal);
         }
     }

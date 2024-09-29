@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-/
+
 struct OHLCV {
     double open;
     double high;

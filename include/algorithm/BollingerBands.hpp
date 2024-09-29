@@ -13,16 +13,10 @@ private:
 public:
     BollingerBands(const std::string &indicatorName, int period, double numStdDev)
         : Indicator(indicatorName, period), numStdDev(numStdDev) {}
-    double calculateSignal() override;
-    void addPrice(double price)
-    {
-        prices.push_back(price);
-        if (prices.size() >= period)
-        {
-            calculateSignal();
-        }
-    }
+
+    SignalResult calculateSignal() override; 
     std::pair<double, double> calculate() const;
+    static std::pair<double, double> calculate(const std::vector<double> &prices, int period, double numStdDev);
 };
 
 #endif

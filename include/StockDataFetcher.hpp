@@ -5,5 +5,5 @@
 
 class StockDataFetcher {
 public:
-    static std::vector<OHLCV> fetchStockData(const std::string& stockSymbol, int timePeriod);
+    static std::vector<OHLCV> fetchStockData(const std::string& stockSymbol, int timePeriod,int Min);
 };
