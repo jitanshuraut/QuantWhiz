@@ -1,4 +1,4 @@
-# QuantWhiz
+# Velocity Vortex
 
 # To-Do List
 
